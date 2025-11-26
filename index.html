@@ -13,28 +13,8 @@
     <script src="https://multicobros.banorte.com/orquestador/lightbox/checkoutV2.js"></script>
 
     <script>
-        function getQueryParam(name, defaultValue) {
-            const params = new URLSearchParams(window.location.search);
-            return params.get(name) || defaultValue;
-        }
-
-        const ENV      = getQueryParam('env', 'pro');
+        const ENV      = "pro";
         const PARAMS   = "lgY4kNdDDtFz3pe8PluLJ/m0eftGjB6/cJWUglwVHir11QqquhbqBNbmj+bgqYj1LuAa2XfFBuDdjTqBG76AaLfKPbAcd6f3bV1yWbwl7/Znys8Wn+sOOsbQPgoigjLOJGz7IgFGUMI6P2Pb8DQOQBqFuVUrBhe+vOhJamkWtTzgUaWmH6qStMEv5QECZdPSVzQEM6MkeUMwLTTgm4lrbc5GAQddQNi68avzwn6qRPGH9Snfcbbi9fqEjs0FyZifuqECE0N3o/EgAwuoMFRSbV5II8YoPyOzWxhBK96F6nmt12VtTtLFnHpByqdLA4U9f0IM4c7vwCN2xdNU2/V3sw%3D%3D:::lQgNryhLo+xRxptT8zI/lEsaq0tK7OEkeiIG3X8ya3b1pFLELIhWPRZSy8hzRpW+Pw8EYGMiqOYttWHhQh42exWVpqjP//y7kWszBGrz6k7Hhm1b+kHKXYI3M5PzhuaQoebE5jsrTTFevbV+qagOHz+HxvBmqPJeIUlNWpTvtNaTgXpiB+VqT2e/JrpfltYmGsFTVlcp06dgXA2u6dpLVCJwuRqKlZM5OSGfHo6Dq99fRolchr6SCY2SgBpt/cFSTSfGiKVYST9749tQ8B6X+HLfuaERrzo6LtCtqpvpLePXBSGIYUnJf6XUBg00p80AHOgrCHOZqXaSD8TW1qxYmpCMRMmBw/CmxvIVXgP+PpUU";
-        const CALLBACK = getQueryParam('callback', '');
-
-        function redirectWithStatus(status, data) {
-            if (!CALLBACK) return;
-            try {
-                const url = new URL(CALLBACK);
-                url.searchParams.set('status', status);
-                if (data && typeof data === 'object') {
-                    url.searchParams.set('extra', encodeURIComponent(JSON.stringify(data)));
-                }
-                window.location.href = url.toString();
-            } catch (e) {
-                console.log('Error construyendo callback:', e);
-            }
-        }
 
         function initPayment() {
             console.log("Inicializando Payment con ENV:", ENV);
@@ -65,7 +45,6 @@
                 console.log("Payment iniciado correctamente");
             } catch (error) {
                 console.error("Error inicializando Payment:", error);
-                redirectWithStatus('error', { message: error?.message || 'init error' });
             }
         }
 
