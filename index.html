@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pago Banorte</title>
+</head>
+<body>
+    <p>Procesando pago, por favor espera...</p>
+
+    <script src="https://multicobros.banorte.com/orquestador/resources/js/jquery-3.3.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+    <script src="https://multicobros.banorte.com/orquestador/lightbox/checkoutV2.js"></script>
+
+    <script>
+        function getQueryParam(name, defaultValue) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name) || defaultValue;
+        }
+
+        const ENV      = getQueryParam('env', 'pro');
+        const PARAMS   = getQueryParam('params', '');
+        const CALLBACK = getQueryParam('callback', '');
+
+        function redirectWithStatus(status, data) {
+            if (!CALLBACK) return;
+            try {
+                const url = new URL(CALLBACK);
+                url.searchParams.set('status', status);
+                if (data && typeof data === 'object') {
+                    url.searchParams.set('extra', encodeURIComponent(JSON.stringify(data)));
+                }
+                window.location.href = url.toString();
+            } catch (e) {
+                console.log('Error construyendo callback:', e);
+            }
+        }
+
+        function initPayment() {
+            console.log("Inicializando Payment con ENV:", ENV);
+            console.log("Params:", PARAMS);
+
+            try {
+                Payment.setEnv(ENV);
+                Payment.startPayment({
+                    Params: PARAMS,
+                    onClosed: function(r) {
+                        console.log("Payment cerrado:", r);
+                        redirectWithStatus('closed', r);
+                    },
+                    onError: function(e) {
+                        console.error("Payment error:", e);
+                        redirectWithStatus('error', e);
+                    },
+                    onSuccess: function(r) {
+                        console.log("Payment éxito:", r);
+                        redirectWithStatus('success', r);
+                    },
+                    onCancel: function(r) {
+                        console.log("Payment cancelado:", r);
+                        redirectWithStatus('cancel', r);
+                    }
+                });
+
+                console.log("Payment iniciado correctamente");
+            } catch (error) {
+                console.error("Error inicializando Payment:", error);
+                redirectWithStatus('error', { message: error?.message || 'init error' });
+            }
+        }
+
+        window.addEventListener('load', initPayment);
+    </script>
+</body>
+</html>
